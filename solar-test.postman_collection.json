@@ -1,0 +1,160 @@
+{
+	"info": {
+		"_postman_id": "3bca54b7-cb5b-43da-9e0a-999fec80fc19",
+		"name": "solar-test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "store",
+			"protocolProfileBehavior": {
+				"followRedirects": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "123",
+							"type": "text"
+						},
+						{
+							"key": "body",
+							"value": "123",
+							"type": "text"
+						},
+						{
+							"key": "postId",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "commentReplyId",
+							"value": "13",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{app}}/api/comment",
+					"host": [
+						"{{app}}"
+					],
+					"path": [
+						"api",
+						"comment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "3463636",
+							"type": "text"
+						},
+						{
+							"key": "body",
+							"value": "346534556346",
+							"type": "text"
+						},
+						{
+							"key": "postId",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "commentReplyId",
+							"value": "31",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{app}}/api/comment/8",
+					"host": [
+						"{{app}}"
+					],
+					"path": [
+						"api",
+						"comment",
+						"8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all comments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app}}/api/comment",
+					"host": [
+						"{{app}}"
+					],
+					"path": [
+						"api",
+						"comment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "comments by a post",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app}}/api/post/1/comment",
+					"host": [
+						"{{app}}"
+					],
+					"path": [
+						"api",
+						"post",
+						"1",
+						"comment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete comment",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app}}/api/comment/3",
+					"host": [
+						"{{app}}"
+					],
+					"path": [
+						"api",
+						"comment",
+						"3"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
