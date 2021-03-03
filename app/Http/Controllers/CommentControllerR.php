@@ -6,6 +6,7 @@ use App\Http\Requests\CreateCommentRequest;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Mockery\Exception;
+use Tests\Unit\CommentCRUDTest;
 
 class CommentControllerR extends Controller
 {
@@ -18,7 +19,6 @@ class CommentControllerR extends Controller
 
   public function index()
   {
-
     $comments = Comment::whereNull('commentReplyId')->get();
     foreach ($comments as $comment) {
       $comment->getAllReplies();
@@ -27,6 +27,7 @@ class CommentControllerR extends Controller
     return response()->json($comments);
   }
 
+  //TODO: hint Post::class
   public function indexByPost($postId)
   {
     $comments = Comment::where('postId', $postId)->whereNull('commentReplyId')->get();
@@ -42,46 +43,32 @@ class CommentControllerR extends Controller
     $parameters = $request->validated();
     $parameters['ip'] = $request->ip();
 
-    $c = Comment::create($parameters);
+    $comment = Comment::create($parameters);
 
-    return response()->json($c, 201);
+    return response()->json($comment, 201);
   }
 
-  public function show($id)
+  public function show(Comment $comment)
   {
-    $c = Comment::find($id);
-
-    $c->getAllReplies();
-
-    if (empty($c)) {
-      return response()->json([], 204);
-    } else {
-      return response()->json($c, 200);
-    }
+    $comment->getAllReplies();
+    return response()->json($comment, 200);
   }
 
-  public function update(CreateCommentRequest $request, $id)
+  public function update(CreateCommentRequest $request, Comment $comment)
   {
-    $c = Comment::find($id);
-
     $parameters = $request->validated();
-    if (empty($c)) {
-      return response()->json([], 406);
-    } else {
-      $c->fill($parameters);
-      $c->save();
+    $parameters['ip'] = $request->ip();
+    $comment->fill($parameters);
+    $comment->save();
 
-      return response()->json($c, 200);
-    }
+    return response()->json($comment, 200);
   }
 
   public function destroy($id)
   {
-    if (Comment::where('id', $id)->delete()) {
-      Comment::where('commentReplyId', $id)->delete();
-      return response()->json([], 200);
-    } else {
-      return response()->json([], 400);
-    }
+    $rows = Comment::where('id', $id)->delete();
+
+    $status = $rows == 1 ? 200:400;
+    return response()->json([], $status);
   }
 }

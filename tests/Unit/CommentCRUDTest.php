@@ -17,7 +17,7 @@ class CommentCRUDTest extends TestCase
   /** @test */
   public function comment_can_be_created()
   {
-    $this->withExceptionHandling();
+    $this->withoutExceptionHandling();
 
     $response = $this->post('api/comment', [
       'title' => 'any title',
@@ -107,22 +107,88 @@ class CommentCRUDTest extends TestCase
   /** @test */
   public function get_all_comments_with_all_replies()
   {
-    $this->withExceptionHandling();
+    $this->withoutExceptionHandling();
 
     $this->seedComments(true);
+    $response = $this->get('api/comment');
 
-    $this->get('api/post/' . 1 . 'comment');
 
-    $this->assertEquals(22, Comment::all()->count());
+    $content = json_decode($response->assertOk()->getContent(), true);
+
+    $size = sizeof($content);
+    foreach ($content as $contentItem) {
+      if (!empty($contentItem['replies'])){
+        $size += sizeof($contentItem['replies']);
+      }
+    }
+    $this->assertEquals($size, Comment::all()->count());
   }
 
-
-  public function seedComments(bool $withReplies)
+  /** @test */
+  public function comment_can_be_updated()
   {
-    $comments = factory(Comment::class, random_int(0,20))->create();
+    $this->withoutExceptionHandling();
 
-    $comments->each(function ($comments) {
-      factory(Comment::class, random_int(0,5))->state('reply')->create(['commentReplyId' => $comments->id]);
-    });
+    $initialCommentData = [
+      'title' => 'initial title',
+      'body' => 'initial body',
+      'postId' => 1
+    ];
+
+    $changedData = [
+      'title' => 'initial title',
+      'body' => 'initial body',
+      'postId' => 1
+    ];
+
+    $commentResponse = $this->post('api/comment', $initialCommentData);
+    $this->assertEquals(201, $commentResponse->getStatusCode());
+
+    $id = Comment::first()->id;
+
+    $this->post('api/comment/' . $id, $changedData);
+
+    $this->assertEquals($changedData['title'], Comment::first()->title);
+    $this->assertEquals($changedData['body'], Comment::first()->body);
+    $this->assertEquals($changedData['postId'], Comment::first()->postId);
   }
+
+  /** @test */
+  public function comment_can_be_deleted()
+  {
+    $this->withoutExceptionHandling();
+
+    $this->seedComments(1, 0);
+    $id = Comment::first()->id;
+    $response = $this->delete('api/comment/' . $id);
+
+    $response->assertOk();
+  }
+
+  /** @test */
+  public function comment_cannot_be_deleted_with_a_wrong_id()
+  {
+    $this->withoutExceptionHandling();
+
+    $this->seedComments(1, 0);
+    $id = 34245;
+    $response = $this->delete('api/comment/' . $id);
+
+    $this->assertEquals(400,$response->status());
+  }
+
+  public function seedComments(int $rootComments = 20, int $replies = 10)
+  {
+    $comments = factory(Comment::class, random_int(1,$rootComments))->create();
+
+    if ($replies != 0){
+      $comments->each(function ($comments, $replies) {
+        factory(Comment::class, random_int(0,$replies))->state('reply')->create(['commentReplyId' => $comments->id]);
+      });
+    }
+
+    return $comments;
+  }
+
+
 }
