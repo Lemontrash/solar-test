@@ -27,7 +27,6 @@ class CommentControllerR extends Controller
     return response()->json($comments);
   }
 
-  //TODO: hint Post::class
   public function indexByPost($postId)
   {
     $comments = Comment::where('postId', $postId)->whereNull('commentReplyId')->get();
@@ -54,8 +53,9 @@ class CommentControllerR extends Controller
     return response()->json($comment, 200);
   }
 
-  public function update(CreateCommentRequest $request, Comment $comment)
+  public function update(CreateCommentRequest $request, $id)
   {
+    $comment = Comment::findOrFail($id);
     $parameters = $request->validated();
     $parameters['ip'] = $request->ip();
     $comment->fill($parameters);

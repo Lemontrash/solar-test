@@ -189,6 +189,4 @@ class CommentCRUDTest extends TestCase
 
     return $comments;
   }
-
-
 }
